@@ -10,18 +10,21 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import java.io.File;
 import java.io.IOException;
 
-public class AudioListFragment extends Fragment implements OnItemSelectedListener {
+public class AudioListFragment extends Fragment implements OnItemSelectedListener, View.OnClickListener {
 
 
     ConstraintLayout player_sheet;
@@ -34,6 +37,9 @@ public class AudioListFragment extends Fragment implements OnItemSelectedListene
     File fileToPlay;
     TextView playSheetStatus, fileNameInPlayerSheet;
     ImageView playButtonInPlayerSheet, skipNxtInPlayerSheet, skipPrevInPlayerSheet;
+    SeekBar seekbar;
+    Handler myHandler;
+    Runnable runnable;
 
 
     @Override
@@ -53,6 +59,10 @@ public class AudioListFragment extends Fragment implements OnItemSelectedListene
         playButtonInPlayerSheet = view.findViewById(R.id.IdPlayButtonInPlayerSheet);
         skipNxtInPlayerSheet = view.findViewById(R.id.IdSkipNxtButtonInPlayerSheet);
         skipPrevInPlayerSheet = view.findViewById(R.id.IdSkipPrevInPlayerSheet);
+        seekbar=view.findViewById(R.id.IdSeekBar);
+        playButtonInPlayerSheet.setOnClickListener(this);
+        skipNxtInPlayerSheet.setOnClickListener(this);
+        skipPrevInPlayerSheet.setOnClickListener(this);
 
 
         myBottomSheetBehavior = BottomSheetBehavior.from(player_sheet);
@@ -62,6 +72,29 @@ public class AudioListFragment extends Fragment implements OnItemSelectedListene
         myListAdapter = new AudioListAdapter(allFileNames, this);
         myList.setLayoutManager(new LinearLayoutManager(getActivity()));
         myList.setAdapter(myListAdapter);
+        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                if(myMediaPlayer==null){
+                    Toast.makeText(getContext(),"select a item to play ",Toast.LENGTH_SHORT).show();
+                    seekBar.setProgress(0);
+                    return ;
+                }
+                pauseAudio();
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                int progress=seekBar.getProgress();
+                myMediaPlayer.seekTo(progress);
+                resumeAudio();
+            }
+        });
     }
 
     @Override
@@ -95,8 +128,14 @@ public class AudioListFragment extends Fragment implements OnItemSelectedListene
             public void onCompletion(MediaPlayer mp) {
                 playSheetStatus.setText("Finished");
                 playButtonInPlayerSheet.setImageResource(R.drawable.play_arrow);
+                isRecording=false;
             }
+
         });
+        seekbar.setMax(myMediaPlayer.getDuration());
+        myHandler=new Handler();
+        updateHandler();
+        myHandler.postDelayed(runnable,0);
     }
 
     public void stopAudio() {
@@ -105,5 +144,66 @@ public class AudioListFragment extends Fragment implements OnItemSelectedListene
         playSheetStatus.setText("stopped");
         myMediaPlayer.stop();
         myMediaPlayer.release();
+        myMediaPlayer=null;
+        myHandler.removeCallbacks(runnable);
+    }
+    public void pauseAudio(){
+        if(myMediaPlayer!=null){
+            playButtonInPlayerSheet.setImageResource(R.drawable.play_arrow);
+            playSheetStatus.setText("paused");
+            myMediaPlayer.pause();
+            isRecording=false;
+            myHandler.removeCallbacks(runnable);
+            return ;
+        }
+    }
+    public void resumeAudio(){
+        if(myMediaPlayer!=null){
+            playButtonInPlayerSheet.setImageResource(R.drawable.pause_arrow);
+            playSheetStatus.setText("playing...");
+            myMediaPlayer.start();
+            isRecording=true;
+            updateHandler();
+            myHandler.postDelayed(runnable,0);
+            return ;
+        }
+    }
+    public void updateHandler(){
+        runnable=new Runnable() {
+            @Override
+            public void run() {
+                seekbar.setProgress(myMediaPlayer.getCurrentPosition());
+                myHandler.postDelayed(this,500);
+            }
+        };
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.IdPlayButtonInPlayerSheet:{
+                if(myMediaPlayer==null){
+                    Toast.makeText(getActivity(),"select a item to play",Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    if(isRecording){
+                        pauseAudio();
+                    }
+                    else{
+                        resumeAudio();
+                    }
+                }
+                break;
+            }
+
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(myMediaPlayer!=null){
+            stopAudio();
+        }
     }
 }

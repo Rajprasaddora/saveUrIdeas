@@ -1,6 +1,8 @@
 package com.example.saveurideas;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.os.Bundle;
@@ -77,7 +79,22 @@ public class RecordeFragment extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.IdListBtn:{
-                navController.navigate(R.id.action_recordeFragment_to_audioListFragment);
+                if(isRecording){
+                    AlertDialog.Builder alertDialog=new AlertDialog.Builder(getContext());
+                    alertDialog.setPositiveButton("OKAY", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            navController.navigate(R.id.action_recordeFragment_to_audioListFragment);
+                        }
+                    });
+                    alertDialog.setNegativeButton("CANCEL", null);
+                    alertDialog.setTitle("Still Rcodrding");
+                    alertDialog.setMessage("Are you sure you want to stop the recording ?");
+                    alertDialog.create().show();
+                }
+                else{
+                    navController.navigate(R.id.action_recordeFragment_to_audioListFragment);
+                }
                 break;
             }
             case R.id.IdPlayButton:{
@@ -190,6 +207,18 @@ public class RecordeFragment extends Fragment implements View.OnClickListener {
         else{
             ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.RECORD_AUDIO},123);
             return false;
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(myMediaRecorder!=null){
+            myMediaRecorder.stop();
+            myMediaRecorder.release();
+            myMediaRecorder=null;
+            nameOfIdea.setText("");
+
         }
     }
 }
