@@ -7,9 +7,9 @@
 
     <ImageView
         android:id="@+id/IdPlayIconInEachItem"
-        android:layout_width="wrap_content"
+        android:layout_width="60dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -20,9 +20,9 @@
     <TextView
         android:id="@+id/IdIdeaName"
         android:layout_width="wrap_content"
-        android:layout_height="match_"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="8dp"
         android:text="TextView"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -33,7 +33,7 @@
         android:id="@+id/IdTimeOfCreation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="4dp"
         android:text="TextView"

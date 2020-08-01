@@ -5,10 +5,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-
+    android:id="@+id/IdPlayerSheet"
     android:background="@drawable/whole_player_sheet"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-    app:behavior_peekHeight="54dp"
+    app:behavior_peekHeight="60dp"
     >
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -29,36 +29,35 @@
             app:srcCompat="@drawable/song_icon" />
 
         <TextView
-            android:id="@+id/textView4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="3"
             android:paddingTop="16dp"
             android:paddingBottom="16dp"
-            android:text="Your Idea"
+            android:text="Media Player"
             android:textColor="@color/cardview_light_background"
-            android:textSize="16sp"
+            android:textSize="18sp"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/IdPlayerSheetStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="3"
             android:paddingTop="16dp"
             android:paddingEnd="24dp"
             android:paddingBottom="16dp"
-            android:text="TextView"
+            android:text="Not playing"
             android:textAlignment="textEnd"
             android:textColor="@color/cardview_light_background" />
     </LinearLayout>
 
     <TextView
-        android:id="@+id/textView6"
+        android:id="@+id/IdFileNameInPlayerSheet"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        android:text="TextView"
+        android:text="file name"
         android:textAlignment="center"
         android:textColor="@color/cardview_light_background"
         android:textSize="18dp"
@@ -68,37 +67,38 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
     <ImageView
-        android:id="@+id/imageView8"
+        android:id="@+id/IdPlayButtonInPlayerSheet"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginTop="44dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView6"
+        app:layout_constraintTop_toBottomOf="@+id/IdFileNameInPlayerSheet"
         app:srcCompat="@drawable/play_arrow" />
 
     <ImageView
-        android:id="@+id/imageView9"
+        android:id="@+id/IdSkipNxtButtonInPlayerSheet"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView8"
+        app:layout_constraintBottom_toBottomOf="@+id/IdPlayButtonInPlayerSheet"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageView8"
-        app:layout_constraintTop_toTopOf="@+id/imageView8"
+        app:layout_constraintStart_toEndOf="@+id/IdPlayButtonInPlayerSheet"
+        app:layout_constraintTop_toTopOf="@+id/IdPlayButtonInPlayerSheet"
         app:srcCompat="@drawable/skip_next" />
 
     <ImageView
-        android:id="@+id/imageView10"
+        android:id="@+id/IdSkipPrevInPlayerSheet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/imageView8"
-        app:layout_constraintEnd_toStartOf="@+id/imageView8"
+        app:layout_constraintBottom_toBottomOf="@+id/IdPlayButtonInPlayerSheet"
+        app:layout_constraintEnd_toStartOf="@+id/IdPlayButtonInPlayerSheet"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imageView8"
+        app:layout_constraintTop_toTopOf="@+id/IdPlayButtonInPlayerSheet"
         app:srcCompat="@drawable/play_previous" />
 
     <SeekBar
+        android:id="@+id/IdSeekBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -106,7 +106,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView8" />
+        app:layout_constraintTop_toBottomOf="@+id/IdPlayButtonInPlayerSheet" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
