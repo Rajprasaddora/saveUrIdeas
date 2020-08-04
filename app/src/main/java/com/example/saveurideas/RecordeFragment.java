@@ -2,7 +2,9 @@ package com.example.saveurideas;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.os.Bundle;
@@ -27,10 +29,23 @@ import android.widget.ImageView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.DriveScopes;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 
 import static android.service.autofill.Validators.and;
 
@@ -45,8 +60,9 @@ public class RecordeFragment extends Fragment implements View.OnClickListener {
     MediaRecorder myMediaRecorder;
     TextInputEditText nameOfIdea;
     long timeWhenStopped=0;
-    String currIdeaName="";
     Chronometer timer;
+    MainActivity needObj;
+    String fileName;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -70,9 +86,7 @@ public class RecordeFragment extends Fragment implements View.OnClickListener {
         nameOfIdea.setOnClickListener(this);
         cancel_recording=view.findViewById(R.id.IdCancelRecording);
         cancel_recording.setOnClickListener(this);
-
-
-
+        fileName=getActivity().getExternalFilesDir("/").getAbsolutePath();
     }
 
     @Override
@@ -114,7 +128,7 @@ public class RecordeFragment extends Fragment implements View.OnClickListener {
                             Log.d("raj","myMediaRecorder is not null");
                         }
                         if(myMediaRecorder==null){
-                            String fileName=getActivity().getExternalFilesDir("/").getAbsolutePath();
+
                             String ideaName=nameOfIdea.getText().toString();
                             if(ideaName.equals("")){
                                 Toast.makeText(getActivity(),"Enter a name for ur Idea",Toast.LENGTH_SHORT).show();
@@ -162,7 +176,9 @@ public class RecordeFragment extends Fragment implements View.OnClickListener {
                         Toast.makeText(getActivity(),"Finish Your Recording then save",Toast.LENGTH_SHORT).show();
                     }
                     else{
+
                         Toast.makeText(getActivity(),"Your Idea is saved",Toast.LENGTH_SHORT).show();
+                        String filePath=fileName+"/"+nameOfIdea.getText().toString()+".3gp";
                         myMediaRecorder.stop();
                         myMediaRecorder.release();
                         myMediaRecorder=null;
@@ -172,6 +188,7 @@ public class RecordeFragment extends Fragment implements View.OnClickListener {
                         timer.stop();
                         timer.setBase(SystemClock.elapsedRealtime());
                         timeWhenStopped=0;
+                        needObj.uploadFile(filePath);
                     }
                 }
                 break;
@@ -201,11 +218,12 @@ public class RecordeFragment extends Fragment implements View.OnClickListener {
         }
     }
     public boolean checkForAudioRecordingPermission(){
-        if(ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.RECORD_AUDIO)== PackageManager.PERMISSION_GRANTED){
+        if(   ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.RECORD_AUDIO)== PackageManager.PERMISSION_GRANTED
+            && (ActivityCompat.checkSelfPermission(getActivity(),Manifest.permission.READ_EXTERNAL_STORAGE) ==   PackageManager.PERMISSION_GRANTED)){
             return true;
         }
         else{
-            ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.RECORD_AUDIO},123);
+            ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.RECORD_AUDIO,Manifest.permission.READ_EXTERNAL_STORAGE},123);
             return false;
         }
     }
@@ -220,5 +238,12 @@ public class RecordeFragment extends Fragment implements View.OnClickListener {
             nameOfIdea.setText("");
 
         }
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        needObj=((MainActivity)this.getActivity());
+
     }
 }
